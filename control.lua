@@ -1,335 +1,198 @@
-local function getArea(entity)
-
-  dist = entity.prototype.max_underground_distance
-  pos = entity.position
-
-  if entity.prototype.type == 'underground-belt' and entity.belt_to_ground_type == 'input' then
-    if entity.direction == defines.direction.north then
-      return {{x=pos.x, y=pos.y-dist}, {x=pos.x, y=pos.y}}, true
-    elseif entity.direction == defines.direction.east then
-      return {{x=pos.x, y=pos.y}, {x=pos.x+dist, y=pos.y}}, false
-    elseif entity.direction == defines.direction.south then
-      return {{x=pos.x, y=pos.y}, {x=pos.x, y=pos.y+dist}}, true
-    elseif entity.direction == defines.direction.west then
-      return {{x=pos.x-dist, y=pos.y}, {x=pos.x, y=pos.y}}, false
-    end
-  else
-    if entity.direction == defines.direction.north then
-      return {{x=pos.x, y=pos.y}, {x=pos.x, y=pos.y+dist}}, true
-    elseif entity.direction == defines.direction.east then
-      return {{x=pos.x-dist, y=pos.y}, {x=pos.x, y=pos.y}}, false
-    elseif entity.direction == defines.direction.south then
-      return {{x=pos.x, y=pos.y-dist}, {x=pos.x, y=pos.y}}, true
-    elseif entity.direction == defines.direction.west then
-      return {{x=pos.x, y=pos.y}, {x=pos.x+dist, y=pos.y}}, false
-    end
-  end
-end
-
-local function getDistance(posA, posB)
-  return math.sqrt(math.pow(posA.x - posB.x, 2) + math.pow(posA.y - posB.y, 2))
-end
-
-local function sortTilesByDistance(tiles, origin)
-  table.sort(tiles, function(a, b)
-    distA = getDistance(a, origin)
-    distB = getDistance(b, origin)
-    return distA < distB
-  end)
-end
-
-local function getPartner(entity)
-  if entity.prototype.type == 'underground-belt' then
-    return entity.neighbours
-  elseif entity.prototype.type == 'pipe-to-ground' then
-    dir = entity.direction
-    pos = entity.position
-
-    for _, neighbours in pairs(entity.neighbours) do
-      for _, subneighbour in pairs(neighbours) do
-        if subneighbour.name == entity.name then
-          spos = subneighbour.position
-          if (dir == 8 and spos.y < pos.y)
-          or (dir == 4 and spos.x < pos.x)
-          or (dir == 0 and spos.y > pos.y)
-          or (dir == 12 and spos.x > pos.x) then
-            return subneighbour
-          end
-        end
-      end
-    end
-  end
-end
-
-local function getTracker(entity)
-    return storage.trackers[entity.unit_number]
-end
-
-local function createTracker(entity)
-
-  area, vertical = getArea(entity)
-
-  start = area[1]
-  stop = area[2]
-
-  start.start = true
-  stop.start = false
-
-  vertexTiles = {
-    {
-      x = start.x,
-      y = start.y,
-      hide = false,
-    },
-    {
-      x = stop.x,
-      y = stop.y,
-      hide = false,
-    }
-  }
-  edgeTiles = {}
-
-  for x = start.x, stop.x, 1 do
-    for y = start.y, stop.y, 1 do
-      if (not (x == start.x and y == start.y))
-      and (not (x == stop.x and y == stop.y)) then
-        table.insert(edgeTiles, {x = x, y = y})
-      end
-    end
-  end
-
-  sortTilesByDistance(vertexTiles, entity.position)
-  vertexTiles[1].hide = true
-  sortTilesByDistance(edgeTiles, entity.position)
-
-  -- Create the tracker
-  tracker = {
-    entity = entity,
-    area = area,
-    vertexTiles = vertexTiles,
-    edgeTiles = edgeTiles,
-    vertical = vertical,
-    index = 1,
-    updated = game.tick,
-  }
-
-  -- Save it
-  storage.trackers[entity.unit_number] = tracker
-
-  return tracker
-end
-
-local function deleteTracker(entity)
-  storage.trackers[entity.unit_number] = nil
-end
-
-local function renderParticle(surface, tile, name, force, vertical, vertex, type)
+-- done i think
+local function render_tracker(surface, position, name, force, direction, type, cap)
 
   occupied = not surface.can_place_entity({
     name = name,
-    position = tile,
+    position = position,
     force = force,
   })
   replaceable = surface.can_fast_replace({
     name = name,
-    position = tile,
-    direction = vertical and defines.direction.north or defines.direction.east,
+    position = position,
+    direction = (direction + 8) % 16, -- reverse direction
     force = force,
   })
 
-  thickness = type == "underground-belt" and settings.global['underground-indicators-belt-thickness'].value or settings.global['underground-indicators-pipe-thickness'].value
-  color = settings.global['underground-indicators-color-normal'].value
-  if occupied then
-    color = settings.global['underground-indicators-color-blocked'].value
-    if replaceable then
-      color = settings.global['underground-indicators-color-replaceable'].value
-    end
-  end
+  thickness = type == "underground-belt" and settings.global["underground-indicators-belt-thickness"].value or settings.global["underground-indicators-pipe-thickness"].value
+  color = occupied and replaceable and settings.global["underground-indicators-color-replaceable"].value or
+      occupied and settings.global["underground-indicators-color-blocked"].value or
+      settings.global["underground-indicators-color-normal"].value
 
-  if color and string.len(color) > 0 then
-    surface.create_entity({
-      name = 'underground-indicators-' .. (vertex and 'rect' or 'dash') .. '-' .. color .. '-' .. thickness .. (((not vertex) and vertical) and '-vertical' or ''),
-      position = {
-        x = tile.x,
-        y = tile.y + 0.5,
-      }
-    })
-  end
+  surface.create_entity({
+    name = "underground-indicators-" .. (cap and "rect" or "dash") .. "-" .. color .. "-" .. thickness .. (((not cap) and (direction == 0 or direction == 8)) and "-vertical" or ""),
+    position = {
+      x = position[1],
+      y = position[2]
+    },
+    direction = direction
+  })
 end
 
-local function renderTracker(tracker, tick)
-  tiles = tracker.tiles
-  index = tracker.index
-  name = tracker.entity.prototype.name
-  force = tracker.entity.force
-  surface = tracker.entity.surface
-  vertical = tracker.vertical
+-- done i think
+local function render_for_player(player, new_scan)
 
-  -- Spawn the rectangles
-  for _, tile in pairs(tracker.vertexTiles) do
-    if not tile.hide then
-      renderParticle(surface, tile, name, force, vertical, true, tracker.entity.type)
-    end
-  end
+  -- get the item stack of whatever they are holding
+  stack = player.cursor_ghost or player.cursor_stack
 
-  -- Spawn the dashes
-  for i, tile in pairs(tracker.edgeTiles) do
-    if i % 8 == index then
-      renderParticle(surface, tile, name, force, vertical, false, tracker.entity.type)
-    end
-  end
+  -- if they are not holding any item, return
+  if player.is_cursor_empty() or not stack.valid_for_read then return end
 
-  -- Increase index by one
-  index = index + 1
-  if index >= 8 then
-    index = 0
-  end
-  tracker.index = index
+  -- get the prototype, which is "name" for cursor_ghost for whatever reason
+  stack = stack.prototype or stack.name
 
-  -- Update the timestamp
-  tracker.updated = tick
-end
-
-local function renderPlayer(player, scan)
-  -- Get the item stack of whatever they are holding
-  stack = player.cursor_stack
-
-  -- If they are not holding any item, return
-  if (not stack) or (not stack.valid_for_read) then return end
-
-  -- If the item they are holding is not an underground
-  -- belt or a pipe-to-ground, return
-  placeResult = stack.prototype.place_result
-  if (not placeResult)
-  or (stack.prototype.place_result.type ~= 'pipe-to-ground'
-  and stack.prototype.place_result.type ~= 'underground-belt') then
+  -- if the item they are holding is not an underground belt or a pipe-to-ground, return
+  place_result = stack.place_result
+  if (not place_result)
+  or (place_result.type ~= "pipe-to-ground"
+  and place_result.type ~= "underground-belt") then
     return
   end
 
-  -- Fetch all entities in a 50x50 range around the player
-  -- that are related to the held item stack
-  dist = settings.global['underground-indicators-range'].value
+  -- fetch all entities in a square range around the player that are related to the held item stack
+  dist = settings.global["underground-indicators-range"].value
   position = player.position
-  entities = player.surface.find_entities_filtered({
-    name = placeResult.name,
-    --type = stack.prototype.place_result.type,
+  entities = place_result.type == "underground-belt" and player.surface.find_entities_filtered({
+    name = place_result.name,
     area = {
       {position.x - dist, position.y - dist},
-      {position.x + dist, position.y + dist},
-    },
+      {position.x + dist, position.y + dist}
+    }
+  }) or player.surface.find_entities_filtered({
+    type = place_result.type,
+    area = {
+      {position.x - dist, position.y - dist},
+      {position.x + dist, position.y + dist}
+    }
   })
 
-  -- Get current game tick
-  tick = game.tick
+  -- if new scan requested, then save entities to tracker storage
+  if new_scan then
+    -- iterate over each entity
+    for _, entity in pairs(entities) do
+      if entity.type == "pipe-to-ground" then
+        -- pipe-to-ground with unknown connections
+        -- side note, this doesn't work with other entities that have underground connections
+        -- may need to fix eventually
+  
+        -- get each fluidbox
+        for i=1, #entity.fluidbox do
 
-  -- Iterate over each entity
+          -- empty table for storing possible fluidbox trackers
+          local trackers = {}
+
+          for j, pipe_connection in pairs(entity.fluidbox.get_pipe_connections(1)) do
+            -- TODO check how this is supposed to work
+
+            -- must not have a connection and must be underground type
+            if not pipe_connection.target and pipe_connection.connection_type == "underground" then
+
+              if pipe_connection.position.x == pipe_connection.target_position.x then
+                direction = pipe_connection.position.y < pipe_connection.target_position.y and 8 or 0
+              else
+                direction = pipe_connection.position.x < pipe_connection.target_position.x and 4 or 12
+              end
+
+              -- check if connection is udnerground and if it has no neighbour
+              -- if true, add to tracker
+              trackers[#trackers+1] = {
+                direction = direction,
+                offset = {0, 0},
+                max_distance = entity.prototype.fluidbox_prototypes[i].pipe_connections[j].max_underground_distance
+              }
+            end
+          end
+
+          -- add tracker if table is non-empty exist
+          if #trackers > 0 then
+            storage.uif_trackers[entity.unit_number] = {
+              trackers = trackers,
+              entity = entity,
+              last_scan = game.tick
+            }
+          end
+        end
+  
+      elseif entity.neighbours == nil and entity.type == "underground-belt" then
+        -- underground belt with no connection
+  
+        -- save a tracker
+        storage.uif_trackers[entity.unit_number] = {
+          trackers = {{
+            direction = entity.direction,
+            offset = {0, 0},
+            max_distance = entity.prototype.max_underground_distance
+          }},
+          entity = entity,
+          last_scan = game.tick
+        }
+      end
+    end
+  end
+  
+  -- which particle to render, only calculated once per player
+  local index = math.floor(game.tick % 90 / 15) + 1
+
   for _, entity in pairs(entities) do
 
-    -- Retrieve their tracker
-    tracker = storage.trackers[entity.unit_number]
+    local tracker = storage.uif_trackers[entity.unit_number]
 
-    -- If they don't have one, check if they should.
-    if (not tracker) and (getPartner(entity) == nil) then
-      tracker = createTracker(entity)
-    end
-
+    -- if traker exists, render it
     if tracker then
-      renderTracker(tracker, tick)
+      -- render each subtracker
+      for _, subtracker in pairs(tracker.trackers) do
+
+        -- position relative to entity position
+        pos = {
+          entity.position.x + subtracker.offset[1],
+          entity.position.y + subtracker.offset[2]
+        }
+        -- direction unit vector relative to entity position
+        dir = {
+          subtracker.direction == 4 and 1 or subtracker.direction == 12 and -1 or 0,
+          subtracker.direction == 0 and -1 or subtracker.direction == 8 and 1 or 0
+        }
+      
+        -- repeat every 6 tiles
+        for i = 0, math.floor(subtracker.max_distance / 6) do
+          -- do every time up until the last tile
+          if 6*i+index < subtracker.max_distance then
+            -- render offset by 6*i+index in the direction of the unit vector
+            render_tracker(entity.surface, {pos[1] + dir[1]*(6*i+index), pos[2] + dir[2]*(6*i+index)}, entity.name, entity.force, subtracker.direction, entity.type, false)
+          end
+        end
+      
+        -- render offset by length in the direction of the unit vector
+        render_tracker(entity.surface, {pos[1] + dir[1]*subtracker.max_distance, pos[2] + dir[2]*subtracker.max_distance}, entity.name, entity.force, subtracker.direction, entity.type, true)
+
+      end
     end
-  end
-end
-
-local function onEntitySpawn(entity)
-
-  -- Find partner
-  partner = getPartner(entity)
-
-  -- Create a tracker only if this entity has no partner.
-  if not partner then
-    createTracker(entity)
-    return
-  end
-
-  -- If it DOES have a partner however, we need to
-  -- delete their tracker as it is no longer an orphan.
-  deleteTracker(partner)
-end
-
-local function onEntityDestroy(entity)
-
-  -- Delete tracker if exists and return
-  if storage.trackers[entity.unit_number] then
-    deleteTracker(entity)
-    return
-  end
-
-  -- Find partner
-  partner = getPartner(entity)
-
-  if not partner or partner.type == "entity-ghost" then return end
-
-  -- Create tracker for partner since they are now an orphan
-  if partner then
-    createTracker(partner)
   end
 end
 
 --[[ Events ]]
 
--- First run
 script.on_init(function()
-  storage.trackers = {}
+  storage.uif_trackers = {}
 end)
 
--- Every run
--- script.on_load(function()
---     -- Metatable fixing
--- end)
-
--- Config changed / mods changed
--- script.on_configuration_changed(function(event)
---   local changes = event.mod_changes['UndergroundIndicatorsFixed']
---   if changes and changes.old_version ~= changes.new_version then
---     for _, tracker in pairs(storage.trackers) do
---       tracker.vertical = (tracker.entity.direction == defines.direction.north
---         or tracker.entity.direction == defines.direction.south)
---     end
---   end
-
---   -- Update settings
---   -- Metatable fixing
--- end)
-
 script.on_event(defines.events.on_tick, function(event)
-  -- Run six times per second
-  if event.tick % 10 == 0 then
-    for id, player in pairs(game.connected_players) do
-      renderPlayer(player, event.tick % 60 == 0)
+  -- runs six times every second
+  if event.tick % 15 == 0 then
+    -- purge trackers that have existed for longer than 60 ticks
+    for entityID, tracker in pairs(storage.uif_trackers) do
+      if game.tick - tracker.last_scan > 120 then
+        storage.uif_trackers[entityID] = nil
+      end
+    end
+
+    -- render trackers
+    for _, player in pairs(game.connected_players) do
+      render_for_player(player, event.tick % 120 == 0)
     end
   end
 end)
 
 script.on_event(defines.events.on_player_cursor_stack_changed, function(event)
-
-  -- Render everything around the player, and scan the area for new orphans
-  player = game.players[event.player_index]
-  renderPlayer(player, true)
-
-  -- Purge useless data
-  tick = game.tick
-  for entityID, tracker in pairs(storage.trackers) do
-    if tick - tracker.updated > 10 then
-      storage.trackers[entityID] = nil
-    end
-  end
+  -- render everything around the player, and scan the area for new orphans
+  render_for_player(game.players[event.player_index], true)
 end)
-
-script.on_event(defines.events.on_built_entity, function(event) onEntitySpawn(event.entity) end, {{filter = "type", type = "underground_belt"}, {filter = "type", type = "pipe_to_ground"}})
-script.on_event(defines.events.on_robot_built_entity, function(event) onEntitySpawn(event.entity) end, {{filter = "type", type = "underground_belt"}, {filter = "type", type = "pipe_to_ground"}})
-script.on_event(defines.events.script_raised_built, function(event) onEntitySpawn(event.entity) end, {{filter = "type", type = "underground_belt"}, {filter = "type", type = "pipe_to_ground"}})
--- script.on_event(defines.events.on_trigger_created_entity, function(event) onEntitySpawn(event.entity) end)
-
-script.on_event(defines.events.on_entity_died, function(event) onEntityDestroy(event.entity) end, {{filter = "type", type = "underground_belt"}, {filter = "type", type = "pipe_to_ground"}})
-script.on_event(defines.events.on_player_mined_entity, function(event) onEntityDestroy(event.entity) end, {{filter = "type", type = "underground_belt"}, {filter = "type", type = "pipe_to_ground"}})
-script.on_event(defines.events.on_robot_mined_entity, function(event) onEntityDestroy(event.entity) end, {{filter = "type", type = "underground_belt"}, {filter = "type", type = "pipe_to_ground"}})
-script.on_event(defines.events.script_raised_destroy, function(event) onEntityDestroy(event.entity) end, {{filter = "type", type = "underground_belt"}, {filter = "type", type = "pipe_to_ground"}})

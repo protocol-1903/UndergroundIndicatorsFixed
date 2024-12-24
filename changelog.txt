@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.2.2
+Date: 2024-12-24
+  Bugfixes:
+    - Fixed an issue where underground pipe indicators would appear underneath fluid network visualizations
+    - Fixed an issue with phantom indicators staying when an underground is connected/picked up
+    - Fixed an issue where using mods with multiple underground connections on a single entity would not render multiple indicators
+    - Fixed an issue where using mods with multiple different pipe types (i.e. AFH) would only render indicators on the held pipe type and nothing else
+---------------------------------------------------------------------------------------------------
 Version: 1.2.1
 Date: 2024-10-30
   Features:
