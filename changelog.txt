@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.2.3
+Date: 2025-01-11
+  Changes:
+    - Removed old control.lua
+    - Changed startup logic to reduce number of sprite files required, and to make adding new files/colors easier
+  Bugfixes:
+    - Removed indicators from factoriopedia
+---------------------------------------------------------------------------------------------------
 Version: 1.2.2
 Date: 2024-12-24
   Bugfixes:

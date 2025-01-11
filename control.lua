@@ -19,7 +19,7 @@ local function render_tracker(surface, position, name, force, direction, type, c
       settings.global["underground-indicators-color-normal"].value
 
   surface.create_entity({
-    name = "underground-indicators-" .. (cap and "rect" or "dash") .. "-" .. color .. "-" .. thickness .. (((not cap) and (direction == 0 or direction == 8)) and "-vertical" or ""),
+    name = "underground-indicators-" .. (cap and "rect-" or "dash-") .. color .. "-" .. thickness,
     position = {
       x = position[1],
       y = position[2]
