@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.2.6
+Date: 2025-01-12
+  Bugfixes:
+    - Fixed an issue with indicators flickering on for a few frames instead of a few seconds
+---------------------------------------------------------------------------------------------------
 Version: 1.2.5
 Date: 2025-01-12
   Bugfixes:

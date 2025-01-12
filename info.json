@@ -1,10 +1,10 @@
 {
 	"name": "UndergroundIndicatorsFixed",
 	"author": "protocol_1903",
-	"version": "1.2.5",
+	"version": "1.2.6",
 	"factorio_version": "2.0",
 	"title": "Underground Indicators Fixed",
-	"homepage": "",
+  "homepage": "https://discord.gg/K3fXMGVc4z",
 	"description": "Shows indicators to help you know where to place underground belts and pipes. Updated with bugfixes and new features.",
 	"dependencies": ["base >= 2.0"]
 }

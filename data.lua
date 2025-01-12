@@ -26,8 +26,8 @@ for color, rgb in pairs(colors) do
         name = "underground-indicators-dash-" .. color .. "-" .. thickness,
         flags = {"not-on-map", "placeable-off-grid", "not-deconstructable", "not-blueprintable"},
         selectable_in_game = false,
-        time_before_shading_off = 1.6,
-        time_before_removed = 2,
+        time_before_shading_off = 96,
+        time_before_removed = 120,
         animation_render_layer = "air-object",
         hidden_in_factoriopedia = true,
         animation = {{
@@ -48,8 +48,8 @@ for color, rgb in pairs(colors) do
         name = "underground-indicators-rect-" .. color .. "-" .. thickness,
         flags = {"not-on-map", "placeable-off-grid", "not-deconstructable", "not-blueprintable"},
         selectable_in_game = false,
-        time_before_shading_off = 1.6,
-        time_before_removed = 2,
+        time_before_shading_off = 96,
+        time_before_removed = 150,
         final_render_layer = "air-object",
         hidden_in_factoriopedia = true,
         animation = {{
