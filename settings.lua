@@ -1,10 +1,12 @@
 
 local thicknesses = {
-  "double-thick",
-  "double-thin",
-  "extra-thick",
-  "thick",
-  "thin"
+  "factorio-like-belt-indicator",
+  "factorio-like-pipe-indicator",
+  "double-thick-line",
+  "double-thin-line",
+  "extra-thick-line",
+  "thick-line",
+  "thin-line"
 }
 
 local colors = {
@@ -22,7 +24,7 @@ data:extend({
     type = "string-setting",
     name = "underground-indicators-belt-thickness",
     setting_type = "runtime-global",
-    default_value = "thick",
+    default_value = "factorio-like-belt-indicator",
     allow_blank = false,
     allowed_values = thicknesses,
     order = "underground-indicators-aa",
@@ -31,7 +33,7 @@ data:extend({
     type = "string-setting",
     name = "underground-indicators-pipe-thickness",
     setting_type = "runtime-global",
-    default_value = "double-thin",
+    default_value = "factorio-like-pipe-indicator",
     allow_blank = false,
     allowed_values = thicknesses,
     order = "underground-indicators-ab",

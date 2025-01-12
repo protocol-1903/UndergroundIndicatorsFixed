@@ -1,12 +1,11 @@
-local function makeParticle(color, thickness, rgb, rect)
-end
-
 local thicknesses = {
-  "double-thick",
-  "double-thin",
-  "extra-thick",
-  "thick",
-  "thin"
+  "factorio-like-belt-indicator",
+  "factorio-like-pipe-indicator",
+  "double-thick-line",
+  "double-thin-line",
+  "extra-thick-line",
+  "thick-line",
+  "thin-line"
 }
 
 local colors = {
@@ -27,25 +26,21 @@ for color, rgb in pairs(colors) do
         name = "underground-indicators-dash-" .. color .. "-" .. thickness,
         flags = {"not-on-map", "placeable-off-grid", "not-deconstructable", "not-blueprintable"},
         selectable_in_game = false,
-        time_before_shading_off = 1.6 * 60,
-        time_before_removed = (2 + (rect and 0.5 or 0)) * 60,
-        final_render_layer = "air-object",
+        time_before_shading_off = 1.6,
+        time_before_removed = 2,
+        animation_render_layer = "air-object",
         hidden_in_factoriopedia = true,
         animation = {{
           filename = "__UndergroundIndicatorsFixed__/graphics/" .. thickness .. "-dash.png",
           priority = "extra-high",
-          width = 32,
-          height = 32,
+          width = 64,
+          height = 64,
           direction_count = 4,
           line_length = 4,
-          -- axially_symmetrical = true,
-          -- flags = {"smoke"},
           frame_count = 1,
-          -- animation_speed = 1,
-          -- scale = 1.0,
-          -- shift = { 0, 0.5 },
-          -- render_layer = "object",
-          tint = rgb
+          scale = 0.5,
+          tint = rgb,
+          
         }}
       },
       {
@@ -53,21 +48,17 @@ for color, rgb in pairs(colors) do
         name = "underground-indicators-rect-" .. color .. "-" .. thickness,
         flags = {"not-on-map", "placeable-off-grid", "not-deconstructable", "not-blueprintable"},
         selectable_in_game = false,
-        time_before_shading_off = 1.6 * 60,
-        time_before_removed = (2 + (rect and 0.5 or 0)) * 60,
+        time_before_shading_off = 1.6,
+        time_before_removed = 2,
         final_render_layer = "air-object",
         hidden_in_factoriopedia = true,
         animation = {{
           filename = "__UndergroundIndicatorsFixed__/graphics/" .. thickness .. "-rect.png",
           priority = "extra-high",
-          width = 32,
-          height = 32,
-          -- flags = {"smoke"},
+          width = 64,
+          height = 64,
           frame_count = 1,
-          -- animation_speed = 1,
-          -- scale = 1.0,
-          -- shift = { 0, 0.5 },
-          -- render_layer = "object",
+          scale = 0.5,
           tint = rgb
         }}
       }

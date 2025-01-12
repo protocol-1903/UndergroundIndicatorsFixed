@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.2.4
+Date: 2025-01-12
+  Features:
+    - Added factoriolike indicators for belts and pipes, courtesy of Ingo_Igel on Discord
+    - These new indicators are the default for their respective category
+---------------------------------------------------------------------------------------------------
 Version: 1.2.3
 Date: 2025-01-11
   Changes:
