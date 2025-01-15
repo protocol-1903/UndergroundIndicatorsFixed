@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.2.7
+Date: 2025-01-15
+  Features:
+    - Added an indicator when placing down undergrounds (can be disabled)
+    - Added a startup setting for selecting the color and styles of placement indicator
+  Changes:
+    - Moved all startup logic to data-final-fixes to help with compatability
+---------------------------------------------------------------------------------------------------
 Version: 1.2.6
 Date: 2025-01-12
   Bugfixes:
