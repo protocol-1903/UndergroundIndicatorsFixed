@@ -141,17 +141,22 @@ local function render_for_player(player, new_scan)
       -- render each subtracker
       for _, subtracker in pairs(tracker.trackers) do
 
-        -- position relative to entity position
-        pos = {
-          entity.position.x + subtracker.offset[1],
-          entity.position.y + subtracker.offset[2]
-        }
+        local reverse = ((entity.prototype.type == "underground-belt" and entity.belt_to_ground_type == "output") and -1 or 1) -- whether or not to render indicators in reverse (only used for underground belt outputs)
+
         -- direction unit vector relative to entity position
         dir = {
           subtracker.direction == 4 and 1 or subtracker.direction == 12 and -1 or 0,
           subtracker.direction == 0 and -1 or subtracker.direction == 8 and 1 or 0
         }
-      
+        -- position relative to entity position
+        pos = {
+          entity.position.x + subtracker.offset[1] + dir[1]*(reverse == 1 and 0 or -1)*subtracker.max_distance,
+          entity.position.y + subtracker.offset[2] + dir[2]*(reverse == 1 and 0 or -1)*subtracker.max_distance
+        }
+        
+        local start = reverse == 1 and 0 or -math.floor(subtracker.max_distance / 6)
+        local finish = reverse == -1 and 0 or math.floor(subtracker.max_distance / 6)
+
         -- repeat every 6 tiles
         for i = 0, math.floor(subtracker.max_distance / 6) do
           -- do every time up until the last tile
@@ -162,7 +167,7 @@ local function render_for_player(player, new_scan)
         end
       
         -- render offset by length in the direction of the unit vector
-        render_tracker(entity.surface, {pos[1] + dir[1]*subtracker.max_distance, pos[2] + dir[2]*subtracker.max_distance}, entity.name, entity.force, subtracker.direction, entity.type, true)
+        render_tracker(entity.surface, {pos[1] + (reverse == 1 and dir[1]*subtracker.max_distance or 0), pos[2] + (reverse == 1 and dir[2]*subtracker.max_distance or 0)}, entity.name, entity.force, subtracker.direction, entity.type, true)
 
       end
     end

@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.2.8
+Date: 2025-01-29
+  Bugfixes:
+    - Fixed an issue with underground belts rendering trackers in the wrong direction when it was and output
+---------------------------------------------------------------------------------------------------
 Version: 1.2.7
 Date: 2025-01-15
   Features:
