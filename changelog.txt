@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.2.9
+Date: 2025-02-26
+  Bugfixes:
+    - Fixed an issue with indicators not rendering when in remote view
+    - Fixed an issue with indicators not rendering when using an item ghost instead of an item stack
+---------------------------------------------------------------------------------------------------
 Version: 1.2.8
 Date: 2025-01-29
   Bugfixes:

@@ -31,14 +31,14 @@ end
 -- done i think
 local function render_for_player(player, new_scan)
 
+  -- if they are not holding any item, return
+  if player.is_cursor_empty() then return end
+
   -- get the item stack of whatever they are holding
   stack = player.cursor_ghost or player.cursor_stack
 
-  -- if they are not holding any item, return
-  if player.is_cursor_empty() or not stack.valid_for_read then return end
-
   -- get the prototype, which is "name" for cursor_ghost for whatever reason
-  stack = stack.prototype or stack.name
+  stack = prototypes.item[player.cursor_ghost and stack.name.name or stack.name]
 
   -- if the item they are holding is not an underground belt or a pipe-to-ground, return
   place_result = stack.place_result
