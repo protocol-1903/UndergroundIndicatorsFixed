@@ -66,6 +66,8 @@ local function render_for_player(player, new_scan)
   -- get the item stack of whatever they are holding
   stack = player.cursor_ghost or player.cursor_stack
 
+  if not stack.valid_for_read then return end
+
   -- get the prototype, which is "name" for cursor_ghost for whatever reason
   stack = prototypes.item[player.cursor_ghost and stack.name.name or stack.name]
 
