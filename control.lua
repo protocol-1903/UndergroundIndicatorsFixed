@@ -1,3 +1,32 @@
+local function check_connections(entity)
+
+  -- add to list if not already existing
+  if not storage.viability[entity] then
+    storage.viability[entity] = {
+      checked = {
+        [entity] = {allowed = true} -- it can obviously connect to itself
+      }
+    }
+  end
+
+  -- reruns every time the save loads, this is fine
+  if not storage.viability[entity].connection_categories then
+    storage.viability[entity].connection_categories = {}
+    for _, connection in pairs(prototypes.entity[entity].fluidbox_prototypes[1].pipe_connections) do
+      if connection.connection_type == "underground" then
+        if type(connection.connection_category) == "table" then
+          for _, category in pairs(connection.connection_category) do
+            storage.viability[entity].connection_categories[category] = true
+          end
+        else
+          game.print(connection.connection_category)
+          storage.viability[entity].connection_categories[connection.connection_category or "default"] = true
+        end
+      end
+    end
+  end
+end
+
 -- done i think
 local function render_tracker(surface, position, name, force, direction, type, cap)
 
@@ -65,11 +94,33 @@ local function render_for_player(player, new_scan)
     }
   })
 
+  -- check stored data
+  check_connections(place_result.name)
+
   -- if new scan requested, then save entities to tracker storage
   if new_scan then
     -- iterate over each entity
     for _, entity in pairs(entities) do
+
       if entity.type == "pipe-to-ground" then
+        -- check stored data
+        check_connections(entity.name)
+
+        -- if not checked against the current entity searching for
+        if not storage.viability[place_result.name].checked[entity.name] then
+          local allowed = false
+          for category, _ in pairs(storage.viability[place_result.name].connection_categories) do
+            if storage.viability[entity.name].connection_categories[category] then
+              allowed = true
+              break
+            end
+          end
+          storage.viability[place_result.name].checked[entity.name] = {allowed = allowed}
+          storage.viability[entity.name].checked[place_result.name] = {allowed = allowed}
+        end
+      end
+
+      if entity.type == "pipe-to-ground" and storage.viability[place_result.name].checked[entity.name].allowed then
         -- pipe-to-ground with unknown connections
         -- side note, this doesn't work with other entities that have underground connections
         -- may need to fix eventually
@@ -81,8 +132,6 @@ local function render_for_player(player, new_scan)
           local trackers = {}
 
           for j, pipe_connection in pairs(entity.fluidbox.get_pipe_connections(1)) do
-            -- TODO check how this is supposed to work
-
             -- must not have a connection and must be underground type
             if not pipe_connection.target and pipe_connection.connection_type == "underground" then
 
@@ -178,6 +227,11 @@ end
 
 script.on_init(function()
   storage.uif_trackers = {}
+  storage.viability = {}
+end)
+
+script.on_configuration_changed(function()
+  storage.viability = {}
 end)
 
 script.on_event(defines.events.on_tick, function(event)
