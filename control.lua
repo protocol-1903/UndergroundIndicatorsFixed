@@ -60,19 +60,19 @@ end
 -- done i think
 local function render_for_player(player, new_scan)
 
-    -- if they are not holding any item, return
-    if player.is_cursor_empty() and not player.cursor_ghost then return end
+  -- if they are not holding any item, return
+  if player.is_cursor_empty() and not player.cursor_ghost then return end
 
-    local stack
-    if player.cursor_ghost then
-      -- if the cursor ghost is valid, name is the LuaItemPrototype
-      stack = player.cursor_ghost.name
-    elseif player.cursor_stack and player.cursor_stack.valid_for_read then
-      -- if the cursor stack is valid, prototype is the LuaItemPrototype
-      stack = player.cursor_stack.prototype
-    end
-  
-    if not stack then return end
+  local stack
+  if player.cursor_ghost then
+    -- if the cursor ghost is valid, name is the LuaItemPrototype
+    stack = player.cursor_ghost.name
+  elseif player.cursor_stack and player.cursor_stack.valid_for_read then
+    -- if the cursor stack is valid, prototype is the LuaItemPrototype
+    stack = player.cursor_stack.prototype
+  end
+
+  if not stack then return end
 
   -- if the item they are holding is not an underground belt or a pipe-to-ground, return
   place_result = stack.place_result
