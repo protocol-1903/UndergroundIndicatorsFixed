@@ -96,8 +96,10 @@ local function render_for_player(player, new_scan)
     }
   })
 
-  -- check stored data
-  check_connections(place_result.name)
+  if place_result.type == "pipe-to-ground" then
+    -- check stored data
+    check_connections(place_result.name)
+  end
 
   -- if new scan requested, then save entities to tracker storage
   if new_scan then
