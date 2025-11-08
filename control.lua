@@ -65,6 +65,8 @@ local function render_for_player(player, new_scan)
 
   local stack = player.cursor_ghost and player.cursor_ghost.name or player.cursor_stack.valid_for_read and player.cursor_stack.prototype
 
+  if not stack then return end
+
   -- if the item they are holding is not an underground belt or a pipe-to-ground, return
   local place_result = stack.place_result
   if (not place_result)
