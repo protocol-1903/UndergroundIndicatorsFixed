@@ -30,20 +30,20 @@ end
 -- done i think
 local function render_tracker(surface, position, name, force, direction, type, cap)
 
-  occupied = not surface.can_place_entity({
+  local occupied = not surface.can_place_entity({
     name = name,
     position = position,
     force = force,
   })
-  replaceable = surface.can_fast_replace({
+  local replaceable = surface.can_fast_replace({
     name = name,
     position = position,
     direction = (direction + 8) % 16, -- reverse direction
     force = force,
   })
 
-  thickness = type == "underground-belt" and settings.global["underground-indicators-belt-thickness"].value or settings.global["underground-indicators-pipe-thickness"].value
-  color = occupied and replaceable and settings.global["underground-indicators-color-replaceable"].value or
+  local thickness = type == "underground-belt" and settings.global["underground-indicators-belt-thickness"].value or settings.global["underground-indicators-pipe-thickness"].value
+  local color = occupied and replaceable and settings.global["underground-indicators-color-replaceable"].value or
       occupied and settings.global["underground-indicators-color-blocked"].value or
       settings.global["underground-indicators-color-normal"].value
 
@@ -61,21 +61,12 @@ end
 local function render_for_player(player, new_scan)
 
   -- if they are not holding any item, return
-  if player.is_cursor_empty() and not player.cursor_ghost then return end
+  if player.is_cursor_empty() then return end
 
-  local stack
-  if player.cursor_ghost then
-    -- if the cursor ghost is valid, name is the LuaItemPrototype
-    stack = player.cursor_ghost.name
-  elseif player.cursor_stack and player.cursor_stack.valid_for_read then
-    -- if the cursor stack is valid, prototype is the LuaItemPrototype
-    stack = player.cursor_stack.prototype
-  end
-
-  if not stack then return end
+  local stack = player.cursor_ghost and player.cursor_ghost.name or player.cursor_stack.valid_for_read and player.cursor_stack.prototype
 
   -- if the item they are holding is not an underground belt or a pipe-to-ground, return
-  place_result = stack.place_result
+  local place_result = stack.place_result
   if (not place_result)
   or (place_result.type ~= "pipe-to-ground"
   and place_result.type ~= "underground-belt") then
@@ -83,9 +74,9 @@ local function render_for_player(player, new_scan)
   end
 
   -- fetch all entities in a square range around the player that are related to the held item stack
-  dist = settings.global["underground-indicators-range"].value
-  position = player.position
-  entities = place_result.type == "underground-belt" and player.surface.find_entities_filtered({
+  local dist = settings.global["underground-indicators-range"].value
+  local position = player.position
+  local entities = place_result.type == "underground-belt" and player.surface.find_entities_filtered({
     name = place_result.name,
     area = {
       {position.x - dist, position.y - dist},
@@ -200,12 +191,12 @@ local function render_for_player(player, new_scan)
         local reverse = ((entity.prototype.type == "underground-belt" and entity.belt_to_ground_type == "output") and -1 or 1) -- whether or not to render indicators in reverse (only used for underground belt outputs)
 
         -- direction unit vector relative to entity position
-        dir = {
+        local dir = {
           subtracker.direction == 4 and 1 or subtracker.direction == 12 and -1 or 0,
           subtracker.direction == 0 and -1 or subtracker.direction == 8 and 1 or 0
         }
         -- position relative to entity position
-        pos = {
+        local pos = {
           entity.position.x + subtracker.offset[1] + dir[1]*(reverse == 1 and 0 or -1)*subtracker.max_distance,
           entity.position.y + subtracker.offset[2] + dir[2]*(reverse == 1 and 0 or -1)*subtracker.max_distance
         }
