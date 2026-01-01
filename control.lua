@@ -1,5 +1,4 @@
 local function check_connections(entity)
-
   -- add to list if not already existing
   if not storage.viability[entity] then
     storage.viability[entity] = {
@@ -27,8 +26,11 @@ local function check_connections(entity)
   end
 end
 
+local belt_stale = settings.global["underground-indicators-disable-belt-animation"].value
+local pipe_stale = settings.global["underground-indicators-disable-pipe-animation"].value
+
 -- done i think
-local function render_tracker(surface, position, name, force, direction, type, cap)
+local function render_tracker(surface, position, name, force, direction, type, cap, stale)
 
   local occupied = not surface.can_place_entity({
     name = name,
@@ -48,7 +50,10 @@ local function render_tracker(surface, position, name, force, direction, type, c
       settings.global["underground-indicators-color-normal"].value
 
   surface.create_entity({
-    name = "underground-indicators-" .. (cap and "rect-" or "dash-") .. color .. "-" .. thickness,
+    name = "underground-indicators-" ..
+      (cap and "rect-" or "dash-") ..
+      color .. "-" .. thickness ..
+      ((type == "underground-belt" and belt_stale or pipe_stale) and "-stale" or ""),
     position = {
       x = position[1],
       y = position[2]
@@ -134,17 +139,10 @@ local function render_for_player(player, new_scan)
           for j, pipe_connection in pairs(entity.fluidbox.get_pipe_connections(1)) do
             -- must not have a connection and must be underground type
             if not pipe_connection.target and pipe_connection.connection_type == "underground" then
-
-              if pipe_connection.position.x == pipe_connection.target_position.x then
-                direction = pipe_connection.position.y < pipe_connection.target_position.y and 8 or 0
-              else
-                direction = pipe_connection.position.x < pipe_connection.target_position.x and 4 or 12
-              end
-
-              -- check if connection is udnerground and if it has no neighbour
-              -- if true, add to tracker
               trackers[#trackers+1] = {
-                direction = direction,
+                direction = pipe_connection.position.x == pipe_connection.target_position.x and
+                  (pipe_connection.position.y < pipe_connection.target_position.y and 8 or 0) or
+                  pipe_connection.position.x < pipe_connection.target_position.x and 4 or 12,
                 offset = {0, 0},
                 max_distance = entity.prototype.fluidbox_prototypes[i].pipe_connections[j].max_underground_distance
               }
@@ -202,9 +200,6 @@ local function render_for_player(player, new_scan)
           entity.position.x + subtracker.offset[1] + dir[1]*(reverse == 1 and 0 or -1)*subtracker.max_distance,
           entity.position.y + subtracker.offset[2] + dir[2]*(reverse == 1 and 0 or -1)*subtracker.max_distance
         }
-        
-        local start = reverse == 1 and 0 or -math.floor(subtracker.max_distance / 6)
-        local finish = reverse == -1 and 0 or math.floor(subtracker.max_distance / 6)
 
         -- repeat every 6 tiles
         for i = 0, math.floor(subtracker.max_distance / 6) do
@@ -225,19 +220,25 @@ end
 
 --[[ Events ]]
 
-script.on_init(function()
+script.on_init(function ()
   storage.uif_trackers = {}
   storage.viability = {}
 end)
 
-script.on_configuration_changed(function()
+script.on_configuration_changed(function ()
   storage.viability = {}
 end)
 
+script.on_event(defines.events.on_runtime_mod_setting_changed, function ()
+  game.print(":")
+  belt_stale = settings.global["underground-indicators-disable-belt-animation"].value
+  pipe_stale = settings.global["underground-indicators-disable-pipe-animation"].value
+end)
+
 script.on_event(defines.events.on_tick, function(event)
-  -- runs six times every second
+  -- runs four times every second
   if event.tick % 15 == 0 then
-    -- purge trackers that have existed for longer than 60 ticks
+    -- purge trackers that have existed for longer than 120 ticks
     for entityID, tracker in pairs(storage.uif_trackers) do
       if game.tick - tracker.last_scan > 120 then
         storage.uif_trackers[entityID] = nil

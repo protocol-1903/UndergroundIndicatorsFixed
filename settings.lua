@@ -21,13 +21,27 @@ local colors = {
 
 data:extend({
   {
+    type = "bool-setting",
+    setting_type = "runtime-global",
+    name = "underground-indicators-disable-belt-animation",
+    default_value = false,
+    order = "underground-indicators-aa",
+  },
+  {
+    type = "bool-setting",
+    setting_type = "runtime-global",
+    name = "underground-indicators-disable-pipe-animation",
+    default_value = false,
+    order = "underground-indicators-ab",
+  },
+  {
     type = "string-setting",
     name = "underground-indicators-belt-thickness",
     setting_type = "runtime-global",
     default_value = "factorio-like-belt-indicator",
     allow_blank = false,
     allowed_values = thicknesses,
-    order = "underground-indicators-aa",
+    order = "underground-indicators-ba",
   },
   {
     type = "string-setting",
@@ -36,7 +50,7 @@ data:extend({
     default_value = "factorio-like-pipe-indicator",
     allow_blank = false,
     allowed_values = thicknesses,
-    order = "underground-indicators-ab",
+    order = "underground-indicators-bb",
   },
   {
     type = "int-setting",
@@ -45,7 +59,7 @@ data:extend({
     default_value = 40,
     maximum_value = 250,
     minimum_value = 1,
-    order = "underground-indicators-b",
+    order = "underground-indicators-c",
   },
   {
     type = "string-setting",
@@ -54,7 +68,7 @@ data:extend({
     default_value = "white",
     allow_blank = false,
     allowed_values = colors,
-    order = "underground-indicators-c",
+    order = "underground-indicators-da",
   },
   {
     type = "string-setting",
@@ -63,7 +77,7 @@ data:extend({
     default_value = "red",
     allow_blank = false,
     allowed_values = colors,
-    order = "underground-indicators-d",
+    order = "underground-indicators-db",
   },
   {
     type = "string-setting",
@@ -72,14 +86,14 @@ data:extend({
     default_value = "yellow",
     allow_blank = false,
     allowed_values = colors,
-    order = "underground-indicators-e",
+    order = "underground-indicators-dc",
   },
   {
     type = "bool-setting",
     name = "underground-indicators-placement-indicator",
     setting_type = "startup",
     default_value = true,
-    order = "underground-indicators-a",
+    order = "underground-indicators-ea",
   },
   {
     type = "string-setting",
@@ -88,7 +102,7 @@ data:extend({
     default_value = "factorio-like-belt-indicator",
     allow_blank = false,
     allowed_values = thicknesses,
-    order = "underground-indicators-b",
+    order = "underground-indicators-eb",
   },
   {
     type = "string-setting",
@@ -97,7 +111,7 @@ data:extend({
     default_value = "factorio-like-pipe-indicator",
     allow_blank = false,
     allowed_values = thicknesses,
-    order = "underground-indicators-c",
+    order = "underground-indicators-ec",
   },
   {
     type = "string-setting",
@@ -106,6 +120,6 @@ data:extend({
     default_value = "white",
     allow_blank = false,
     allowed_values = colors,
-    order = "underground-indicators-d",
+    order = "underground-indicators-ed",
   }
 })

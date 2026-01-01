@@ -1,13 +1,3 @@
-local thicknesses = {
-  "factorio-like-belt-indicator",
-  "factorio-like-pipe-indicator",
-  "double-thick-line",
-  "double-thin-line",
-  "extra-thick-line",
-  "thick-line",
-  "thin-line"
-}
-
 local colors = {
   ["white"] = {1.0, 1.0, 1.0},
   ["red"] = {1.0, 0.0, 0.0},
@@ -19,14 +9,25 @@ local colors = {
 }
 
 for color, rgb in pairs(colors) do
-  for _, thickness in pairs(thicknesses) do
-    data:extend({
+  for _, thickness in pairs {
+    "factorio-like-belt-indicator",
+    "factorio-like-pipe-indicator",
+    "double-thick-line",
+    "double-thin-line",
+    "extra-thick-line",
+    "thick-line",
+    "thin-line"
+  } do for _, stale in pairs {
+    true,
+    false
+  } do
+    data:extend{
       {
         type = "corpse",
-        name = "underground-indicators-dash-" .. color .. "-" .. thickness,
+        name = "underground-indicators-dash-" .. color .. "-" .. thickness .. (stale and "-stale" or ""),
         flags = {"not-on-map", "placeable-off-grid", "not-deconstructable", "not-blueprintable"},
         selectable_in_game = false,
-        time_before_shading_off = 96,
+        time_before_shading_off = stale and 0 or 96,
         time_before_removed = 120,
         animation_render_layer = "air-object",
         hidden_in_factoriopedia = true,
@@ -44,11 +45,11 @@ for color, rgb in pairs(colors) do
       },
       {
         type = "corpse",
-        name = "underground-indicators-rect-" .. color .. "-" .. thickness,
+        name = "underground-indicators-rect-" .. color .. "-" .. thickness .. (stale and "-stale" or ""),
         flags = {"not-on-map", "placeable-off-grid", "not-deconstructable", "not-blueprintable"},
         selectable_in_game = false,
-        time_before_shading_off = 96,
-        time_before_removed = 150,
+        time_before_shading_off = stale and 0 or 96,
+        time_before_removed = 120,
         final_render_layer = "air-object",
         hidden_in_factoriopedia = true,
         animation = {{
@@ -60,8 +61,8 @@ for color, rgb in pairs(colors) do
           tint = rgb
         }}
       }
-    })
-  end
+    }
+  end end
 end
 
 if settings.startup["underground-indicators-placement-indicator"] then

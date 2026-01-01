@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.3.7
+Date: 2025-12-31
+  Changes:
+    - Added an option to disable the animation with static indicators. Resolves https://github.com/protocol-1903/UndergroundIndicatorsFixed/issues/2
+---------------------------------------------------------------------------------------------------
 Version: 1.3.6
 Date: 2025-11-07
   Bugfixes:
