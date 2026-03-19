@@ -11,3 +11,6 @@ Plenty of graphics options!
 Fixes an issue with ghost pipes present in the old version.
 [old version](https://mods.factorio.com/mod/UndergroundIndicators)
 [old old version](https://mods.factorio.com/mod/Underground%20Indicators)
+
+My mods are made 100% by humans, with no computer generated code or graphics.
+If you have a mod idea, let me know and I can look into it.
