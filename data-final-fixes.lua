@@ -39,8 +39,7 @@ for color, rgb in pairs(colors) do
           line_length = 4,
           frame_count = 1,
           scale = 0.5,
-          tint = rgb,
-          
+          tint = rgb
         }}
       },
       {

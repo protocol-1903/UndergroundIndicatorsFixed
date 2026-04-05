@@ -129,7 +129,7 @@ local function render_for_player(player, new_scan)
         -- pipe-to-ground with unknown connections
         -- side note, this doesn't work with other entities that have underground connections
         -- may need to fix eventually
-  
+
         -- get each fluidbox
         for i=1, #entity.fluidbox do
 
@@ -158,10 +158,10 @@ local function render_for_player(player, new_scan)
             }
           end
         end
-  
+
       elseif entity.neighbours == nil and entity.type == "underground-belt" then
         -- underground belt with no connection
-  
+
         -- save a tracker
         storage.uif_trackers[entity.unit_number] = {
           trackers = {{
@@ -175,7 +175,7 @@ local function render_for_player(player, new_scan)
       end
     end
   end
-  
+
   -- which particle to render, only calculated once per player
   local index = math.floor(game.tick % 90 / 15) + 1
 
@@ -218,8 +218,6 @@ local function render_for_player(player, new_scan)
   end
 end
 
---[[ Events ]]
-
 script.on_init(function ()
   storage.uif_trackers = {}
   storage.viability = {}
@@ -230,7 +228,6 @@ script.on_configuration_changed(function ()
 end)
 
 script.on_event(defines.events.on_runtime_mod_setting_changed, function ()
-  game.print(":")
   belt_stale = settings.global["underground-indicators-disable-belt-animation"].value
   pipe_stale = settings.global["underground-indicators-disable-pipe-animation"].value
 end)
