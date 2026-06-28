@@ -1,16 +1,72 @@
-MIT License
+Sunset Protocol License
+(A non-commercial license with time-delayed MIT fallback)
 
 Copyright (c) 2026 protocol_1903
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+of this software and associated documentation files (the "Software"), to use,
+copy, modify, merge, publish, and distribute the Software, and to permit
+persons to whom the Software is furnished to do so, subject to the following
+conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+“Derivative Works” means any work that is based upon or derived from the
+Software, in whole or in part, including but not limited to modifications,
+adaptations, translations, abridgments, extensions, or any other form in which
+the Software may be recast, transformed, or built upon.
+
+Derivative Works include, without limitation:
+(a) any modification of the source code or compiled form of the Software;
+(b) any work that incorporates the Software, in whole or in substantial part,
+into another program or project; and
+(c) any work that is designed to extend, modify, or make use of the Software’s
+internal structure, logic, or functionality.
+
+For the avoidance of doubt, Derivative Works do not include works that merely
+interact with the Software through its public interfaces without incorporating
+any portion of the Software itself, such as independent programs that use the
+Software as an external tool or service.
+
+The Software or Derivative Works may not be sold, licensed for a fee, or
+otherwise distributed in whole or in part, in exchange for monetary
+compensation or any other form of consideration.
+
+You may reproduce and distribute copies of the Software or any Derivative
+Works in whole or in part, in any medium, provided that you comply with all
+terms and conditions of this License.
+
+Any such distribution must include a complete copy of this License, must
+retain all applicable copyright notices, and must provide appropriate
+attribution to the original author(s).
+
+Attribution must include, at minimum:
+(a) the name of the original author(s),
+(b) a reference to this License,
+(c) a link to the original source or repository of the Software, if one is
+publicly available, and
+(d) presentation in a reasonable manner that does not suggest endorsement
+by the original author(s).
+
+You may apply additional or different license terms to Derivative Works that
+you create, provided that such terms are consistent with, subordinate to, and
+do not restrict, override, or conflict with the requirements and limitations
+of this License as they apply to the Software or any portions thereof.
+
+Time-Limited License Fallback (Attribution-Preserving):
+Notwithstanding any other provision of this License, this Software shall,
+after the earliest of:
+(a) a period of 2 years from the date of the most recent published release; or
+(b) a period of 10 years from the date of the original release;
+be made available under the terms of the MIT License, subject to the
+additional requirements that:
+(a) the name of the original author(s) is retained, and
+(b) a link to the original source or repository of the Software is included,
+where reasonably possible.
+
+All other restrictions and conditions of this License shall no longer apply
+after this period.
+
+Any failure to comply with the terms of this License will automatically
+terminate the rights granted herein.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,

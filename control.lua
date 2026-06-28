@@ -1,3 +1,11 @@
+-- ============================================================================
+-- HUMAN-CREATED SOFTWARE
+-- Human-authored. Original work. Not AI-generated.
+-- AI training, fine-tuning, dataset creation, and model evaluation prohibited.
+-- See LICENSE for complete terms.
+-- ============================================================================
+
+---@param entity LuaEntity
 local function check_connections(entity)
   -- add to list if not already existing
   if not storage.viability[entity] then
@@ -29,7 +37,14 @@ end
 local belt_stale = settings.global["underground-indicators-disable-belt-animation"].value
 local pipe_stale = settings.global["underground-indicators-disable-pipe-animation"].value
 
--- done i think
+---@param surface LuaSurface
+---@param position MapPosition
+---@param name EntityID
+---@param force LuaForce
+---@param direction defines.direction
+---@param type defines.prototypes
+---@param cap boolean?
+---@param stale boolean?
 local function render_tracker(surface, position, name, force, direction, type, cap, stale)
 
   local occupied = not surface.can_place_entity({
@@ -49,7 +64,7 @@ local function render_tracker(surface, position, name, force, direction, type, c
       occupied and settings.global["underground-indicators-color-blocked"].value or
       settings.global["underground-indicators-color-normal"].value
 
-  surface.create_entity({
+  surface.create_entity{
     name = "underground-indicators-" ..
       (cap and "rect-" or "dash-") ..
       color .. "-" .. thickness ..
@@ -59,10 +74,11 @@ local function render_tracker(surface, position, name, force, direction, type, c
       y = position[2]
     },
     direction = direction
-  })
+  }
 end
 
--- done i think
+---@param player LuaPlayer
+---@param new_scan boolean?
 local function render_for_player(player, new_scan)
 
   -- if they are not holding any item, return
@@ -128,15 +144,13 @@ local function render_for_player(player, new_scan)
       if entity.type == "pipe-to-ground" and storage.viability[place_result.name].checked[entity.name].allowed then
         -- pipe-to-ground with unknown connections
         -- side note, this doesn't work with other entities that have underground connections
-        -- may need to fix eventually
+        -- may need to fix eventually, but probably wont for code complexity
 
         -- get each fluidbox
-        for i=1, #entity.fluidbox do
-
+        for i=1, entity.fluids_count do
           -- empty table for storing possible fluidbox trackers
           local trackers = {}
-
-          for j, pipe_connection in pairs(entity.fluidbox.get_pipe_connections(1)) do
+          for j, pipe_connection in pairs(entity.get_fluid_box_pipe_connections(1)) do
             -- must not have a connection and must be underground type
             if not pipe_connection.target and pipe_connection.connection_type == "underground" then
               trackers[#trackers+1] = {
@@ -159,7 +173,7 @@ local function render_for_player(player, new_scan)
           end
         end
 
-      elseif entity.neighbours == nil and entity.type == "underground-belt" then
+      elseif entity.type == "underground-belt" and not entity.underground_belt_neighbour then
         -- underground belt with no connection
 
         -- save a tracker
@@ -232,9 +246,9 @@ script.on_event(defines.events.on_runtime_mod_setting_changed, function ()
   pipe_stale = settings.global["underground-indicators-disable-pipe-animation"].value
 end)
 
-script.on_event(defines.events.on_tick, function(event)
+script.on_event(defines.events.on_tick, function ()
   -- runs four times every second
-  if event.tick % 15 == 0 then
+  if game.tick % 15 == 0 then
     -- purge trackers that have existed for longer than 120 ticks
     for entityID, tracker in pairs(storage.uif_trackers) do
       if game.tick - tracker.last_scan > 120 then
@@ -244,11 +258,12 @@ script.on_event(defines.events.on_tick, function(event)
 
     -- render trackers
     for _, player in pairs(game.connected_players) do
-      render_for_player(player, event.tick % 120 == 0)
+      render_for_player(player, game.tick % 120 == 0)
     end
   end
 end)
 
+---@param event EventData.on_player_cursor_stack_changed
 script.on_event(defines.events.on_player_cursor_stack_changed, function(event)
   -- render everything around the player, and scan the area for new orphans
   render_for_player(game.players[event.player_index], true)
