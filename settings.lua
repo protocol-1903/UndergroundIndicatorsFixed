@@ -1,3 +1,9 @@
+-- ============================================================================
+-- HUMAN-CREATED SOFTWARE
+-- Human-authored. Original work. Not AI-generated.
+-- AI training, fine-tuning, dataset creation, and model evaluation prohibited.
+-- See LICENSE for complete terms.
+-- ============================================================================
 
 local thicknesses = {
   "factorio-like-belt-indicator",

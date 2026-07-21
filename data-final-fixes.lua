@@ -1,3 +1,10 @@
+-- ============================================================================
+-- HUMAN-CREATED SOFTWARE
+-- Human-authored. Original work. Not AI-generated.
+-- AI training, fine-tuning, dataset creation, and model evaluation prohibited.
+-- See LICENSE for complete terms.
+-- ============================================================================
+
 local colors = {
   ["white"] = {1.0, 1.0, 1.0},
   ["red"] = {1.0, 0.0, 0.0},
