@@ -84,7 +84,7 @@ local function render_for_player(player, new_scan)
   -- if they are not holding any item, return
   if player.is_cursor_empty() then return end
 
-  local stack = player.cursor_ghost and player.cursor_ghost.name or player.cursor_stack.valid_for_read and player.cursor_stack.prototype
+  local stack = player.cursor_ghost and player.cursor_ghost.name or player.cursor_stack and player.cursor_stack.valid_for_read and player.cursor_stack.prototype
 
   if not stack then return end
 

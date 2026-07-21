@@ -3,6 +3,8 @@ Version: 1.4.1
 Date: ????
   Changes:
     - Added human-created software disclaimer to lua file headers
+  Bugfixes:
+    - Fixed a crash when cursor stack is nil. Thanks for getting ran over, lou. Resolves https://github.com/protocol-1903/UndergroundIndicatorsFixed/issues/3
 ---------------------------------------------------------------------------------------------------
 Version: 1.4.0
 Date: 2026-06-27
